@@ -26,6 +26,10 @@ class ChatController extends Controller
 
         broadcast(new \App\Events\MessageSent($message))->toOthers();
 
-        return response()->json($message->load('user'));
+        if ($request->wantsJson()) {
+            return response()->json($message->load('user'));
+        }
+
+        return redirect()->back();
     }
 }
