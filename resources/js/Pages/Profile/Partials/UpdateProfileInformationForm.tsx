@@ -5,6 +5,7 @@ import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
+import { PageProps } from '@/types';
 
 export default function UpdateProfileInformation({
     mustVerifyEmail,
@@ -15,7 +16,8 @@ export default function UpdateProfileInformation({
     status?: string;
     className?: string;
 }) {
-    const user = usePage().props.auth.user;
+    const { auth } = usePage<PageProps>().props;
+    const user = auth.user;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
@@ -49,7 +51,7 @@ export default function UpdateProfileInformation({
                         id="name"
                         className="mt-1 block w-full"
                         value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
+                        onChange={(e) => setData('name' as keyof typeof data, e.target.value)}
                         required
                         isFocused
                         autoComplete="name"
@@ -66,7 +68,7 @@ export default function UpdateProfileInformation({
                         type="email"
                         className="mt-1 block w-full"
                         value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
+                        onChange={(e) => setData('email' as keyof typeof data, e.target.value)}
                         required
                         autoComplete="username"
                     />
