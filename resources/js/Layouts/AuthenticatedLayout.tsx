@@ -33,6 +33,12 @@ export default function Authenticated({
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    href={route('chat.index')}
+                                    active={route().current('chat.index')}
+                                >
+                                    Chat
+                                </NavLink>
                             </div>
                         </div>
 
