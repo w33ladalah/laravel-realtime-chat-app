@@ -1,0 +1,39 @@
+FROM php:8.2-cli
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    netcat-traditional
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www
+
+# Copy existing application directory
+COPY . .
+
+# Install dependencies
+RUN composer install
+
+# Add wait-for-mysql script
+COPY docker/wait-for-mysql.sh /usr/local/bin/wait-for-mysql.sh
+RUN chmod +x /usr/local/bin/wait-for-mysql.sh
+
+# Expose port 8080
+EXPOSE 8080
+
+CMD ["/usr/local/bin/wait-for-mysql.sh", "mysql:3306", "--", "php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]

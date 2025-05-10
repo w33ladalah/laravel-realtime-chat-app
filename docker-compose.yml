@@ -1,0 +1,111 @@
+name: ai-chat-laravel
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - laravel-network
+    depends_on:
+      - mysql
+      - redis
+
+  nginx:
+    image: nginx:alpine
+    container_name: laravel-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - laravel-network
+    depends_on:
+      - app
+
+  reverb:
+    build:
+      context: .
+      dockerfile: Dockerfile.reverb
+    container_name: laravel-reverb
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/var/www
+    networks:
+      - laravel-network
+    depends_on:
+      - redis
+      - mysql
+
+  vite:
+    build:
+      context: .
+      dockerfile: Dockerfile.vite
+    container_name: laravel-vite
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./:/var/www
+      - vite_node_modules:/var/www/node_modules/
+    networks:
+      - laravel-network
+    depends_on:
+      - mysql
+      - redis
+      - reverb
+      - app
+
+  mysql:
+    image: mysql:8.0
+    container_name: laravel-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel-network
+
+  redis:
+    image: redis:alpine
+    container_name: laravel-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - laravel-network
+
+  adminer:
+    build:
+      context: .
+      dockerfile: Dockerfile.adminer
+    environment:
+      - ADMINER_PLUGINS=
+      - ADMINER_DESIGN=pepa-linha
+      - ADMINER_DEFAULT_SERVER=mysql
+    ports:
+      - "${ADMINER_PORT}:8080"
+    depends_on:
+      - mysql
+
+networks:
+  laravel-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  vite_node_modules:
