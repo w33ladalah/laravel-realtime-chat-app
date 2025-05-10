@@ -29,11 +29,11 @@ COPY . .
 # Install dependencies
 RUN composer install
 
-# Add wait-for-mysql script
+# Add wait-for-it script
 COPY docker/wait-for-mysql.sh /usr/local/bin/wait-for-mysql.sh
 RUN chmod +x /usr/local/bin/wait-for-mysql.sh
 
 # Expose port 8080
 EXPOSE 8080
 
-CMD ["/usr/local/bin/wait-for-mysql.sh", "mysql:3306", "--", "php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+CMD ["/usr/local/bin/wait-for-mysql.sh", "mysql", "3306", "--", "php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
