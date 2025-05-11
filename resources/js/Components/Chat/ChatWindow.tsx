@@ -24,8 +24,8 @@ export default function ChatWindow({ initialMessages }: ChatWindowProps) {
         // Use native WebSockets instead
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.hostname;
-        const port = 8080; // Reverb port
-        const appKey = import.meta.env.VITE_REVERB_APP_KEY || 'testbae'; // Your Reverb app key
+        const port = import.meta.env.VITE_REVERB_PORT; // Reverb port
+        const appKey = import.meta.env.VITE_REVERB_APP_KEY; // Your Reverb app key
         const wsUrl = `${protocol}//${host}:${port}/app/${appKey}?protocol=7&client=js&version=7.0.0`;
 
         console.log('Connecting to WebSocket:', wsUrl);
@@ -49,7 +49,7 @@ export default function ChatWindow({ initialMessages }: ChatWindowProps) {
             const data = JSON.parse(event.data);
             console.log('WebSocket message:', data);
 
-            if (data.event === 'MessageSent') {
+            if (data.event === 'message_sent') {
                 console.log('New message received:', data.data.message);
                 setMessages(prev => [...prev, data.data.message]);
             }
@@ -91,14 +91,9 @@ export default function ChatWindow({ initialMessages }: ChatWindowProps) {
         });
     };
 
+
     return (
         <div className="h-[600px] flex flex-col">
-            <div className="mb-4">
-                <span className={connected ? "text-green-500" : "text-red-500"}>
-                    {connected ? "Connected" : "Disconnected"}
-                </span>
-            </div>
-
             <div className="flex-1 overflow-y-auto mb-4 space-y-4">
                 {Array.isArray(messages) && messages.map((message) => (
                     <div
@@ -137,6 +132,12 @@ export default function ChatWindow({ initialMessages }: ChatWindowProps) {
                     Send
                 </button>
             </form>
+            <div className="mt-1">
+                <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${connected ? "bg-green-500" : "bg-red-500"}`}></div>
+                    <small>{connected ? "Connected" : "Disconnected"}</small>
+                </div>
+            </div>
         </div>
     );
 }

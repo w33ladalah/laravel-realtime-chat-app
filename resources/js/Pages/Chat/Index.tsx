@@ -63,26 +63,6 @@ export default function Index({ auth, messages }: PageProps<{ messages: Message[
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4">
-                        <div className="p-6 text-gray-900">
-                            <div className="flex items-center space-x-4 mb-4">
-                                <button
-                                    onClick={testWebSocketConnection}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                >
-                                    Test WebSocket Connection
-                                </button>
-                                <div className="text-gray-700">
-                                    Status: <span className={
-                                        wsStatus.includes('Connected') ? 'text-green-500' :
-                                        wsStatus.includes('Connecting') ? 'text-yellow-500' :
-                                        'text-red-500'
-                                    }>{wsStatus}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <ChatWindow initialMessages={messages} />
